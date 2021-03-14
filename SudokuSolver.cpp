@@ -6,21 +6,17 @@ vector<vector<int>> solveSudoku(vector<vector<int>> board)
   return board;
 }
 
-bool tryDigitsAtPosition(int row, int col, vector<vector<int>> &board)
-{
-  for(int digit = 1; digit <= 9; digit++)
-  {
-    if(isValidAtPosition(digit, row, col, board))
-    {
-      board[row][col] = digit;
-      if(solvePartialSudoku(row, col + 1, board))
-        return true;
-    }
-  }
-  board[row][col] = 0;
-  return false;
-}
-
+/**
+ * @brief The core function which solves the 
+ * sudoku puzzle. 
+ * 
+ * @param row The row position in the board
+ * @param col The column position in the board
+ * @param board The sudoku board
+ * @return true The sudoku puzzle has been solved
+ * @return false No valid digit for current position, 
+ * reset value and backtrack
+ */
 bool solvePartialSudoku(int row, int col, vector<vector<int>> &board)
 {
   int currentRow = row;
@@ -34,12 +30,45 @@ bool solvePartialSudoku(int row, int col, vector<vector<int>> &board)
       return true;
   }
 
+  // Fill the position with a valid digit
   if(board[currentRow][currentCol] == 0)
   {
     return tryDigitsAtPosition(currentRow, currentCol, board);
   }
 
+  // Move on to the next position
   return solvePartialSudoku(currentRow, currentCol + 1, board);
+}
+
+/**
+ * @brief Identifies the correct digit for the current
+ * cell position in the board. Backtracks when there 
+ * is no digit that can be placed in the current
+ * position due to an incorrect digit stored in a
+ * previous position.
+ * 
+ * @param row The row position in the board
+ * @param col The column position in the board
+ * @param board The sudoku board
+ * @return true The sudoku puzzle has been solved
+ * @return false No valid digit for current position, 
+ * reset value and backtrack
+ */
+bool tryDigitsAtPosition(int row, int col, vector<vector<int>> &board)
+{
+  for(int digit = 1; digit <= 9; digit++)
+  {
+    if(isValidAtPosition(digit, row, col, board))
+    {
+      board[row][col] = digit;
+      if(solvePartialSudoku(row, col + 1, board))
+        return true;
+    }
+  }
+
+  // No valid digit for the current position, reset value
+  board[row][col] = 0;
+  return false;
 }
 
 /**
